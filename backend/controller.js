@@ -43,7 +43,6 @@ app.get("/qr", (req, res) => {
 
 app.post('/api', (req, res) => {
     console.log(req.body); // Log the request body to the console
-
     // Send a response back to the client
     res.json({ message: 'Data received successfully' });
 
@@ -54,16 +53,21 @@ app.post('/api', (req, res) => {
     });
 });
 
-client.initialize();
-
-
-
-
-client.once("message_create", async (msg) => {
-    const number = "60173408550";
-    const chatId = number + "@c.us"
-    client.sendMessage(chatId, "test ma fren once")
+app.post("/logout", async (req, res) => {
+    try {
+        console.log("Logging out...");
+        await client.logout();
+        console.log("Logged out. Destroying client...");
+        await client.destroy();
+        console.log("Client destroyed. Logged out successfully")
+        res.json({ message: "Logged out successfully" })
+    } catch (err) {
+        console.error("An error occurred while logging out:", err);
+        res.status(500).json({ message: "An error occurred while logging out" });
+    }
 })
+
+client.initialize();
 
 app.listen(3001, () => {
     console.log("listen on port 3001 ...")
